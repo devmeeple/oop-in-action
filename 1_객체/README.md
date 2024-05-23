@@ -1,11 +1,13 @@
 # 객체
+
 ## 객체
+
 - 절차지향 / 객체지향
 - 프로시저: 특정작업을 수행하기 위한 코드 블럭
+
 > 객체는 기능으로 정의한다.
 
-객체의 핵심은 `기능제공`이다. 객체는 제공하는 기능으로 정의한다. 내부적으로 가진 필드(데이터)로 정의하지
-않는다.
+**객체의 핵심은 기능제공(행위)이다.** 객체는 제공하는 기능으로 정의한다. 내부적으로 가진 필드(데이터)로 정의하지 않는다.
 
 - 예) 회원 객체
     - 암호 변경하기 기능
@@ -16,28 +18,34 @@
     - 소리 크기 감소하기 기능
 
 ### 기능 명세
+
 메소드(오퍼레이션)를 사용해서 기능을 명세한다. 이름, 파라미터, 결과로 구성된다.
 
 객체와 객체를 연결하는 것은 기능을 사용해서 연결한다. 이때 기능사용은 메소드 호출을 의미한다.
 
 ### 용어
+
 객체와 객체가 상호작용 할 때 `메시지`를 주고받는다. 고 표현한다. 메시지는 다양하게 사용된다.
+
 - 예)메서드를 호출하는 메시지,리턴하는 메시지, 익셉션 메시지
 
 특별한 기능이 없고 데이터만 제공하는 클래스는 데이터라고 말한다.
+
 ```typescript
 class Member {
-    private id: string;
-    private name: string;
-    
-    // getter & setter
+  private id: string;
+  private name: string;
+
+  // getter & setter
 }
 ```
 
 ## 캡슐화
+
 > 캡슐화만 잘 사용해도 반은 먹고간다. (좋은 코드를 작성할 확률이 높다.)
 
 ### 캡슐화(Encapsulation)
+
 - 데이터와 관련된 기능을 묶는 것이다. 이때 객체가 기능을 어떻게 구현했는지는 외부에 감춘다.
 - 구현에 사용된 데이터의 상세 내용을 외부에 감춘다.
 - 과거에는 따로 표현하는 경우가 있었지만 최근에는 캡슐화에 정보 은닉(Information Hiding) 의미를 포함한다.
@@ -51,17 +59,17 @@ A. 외부에 영향 없이 객체 내부 구현을 변경 가능하기 위해서
 // 1) 기존 코드 2) 서비스가 대성하여 작성된 코드
 // 캡슐화를 한 예시코드
 if (acc.hasRegularPermission()) {
-    // ... 정회원 기능
+  // ... 정회원 기능
 }
 
 export class Account {
-    private _membership: Membership;
-    private _expDate: Date;
-    
-    // this를 사용해서 인스턴스 멤버에 명확하게 접근한다.
-    hasRegularPermission(): boolean {
-        return this._membership === REGULAR && this._expDate > new Date();
-    }
+  private _membership: Membership;
+  private _expDate: Date;
+
+  // this를 사용해서 인스턴스 멤버에 명확하게 접근한다.
+  hasRegularPermission(): boolean {
+    return this._membership === REGULAR && this._expDate > new Date();
+  }
 }
 ```
 
@@ -73,17 +81,21 @@ export class Account {
 캡슐화를 잘 하기 위해서는 코드의 전반적인 이해가 필요하다. 의도를 파악하지 않고 캡슐화를 잘 할 수 없다.
 
 ### 캡슐화 규칙
+
 > 1. Tell, Don't Ask: 데이터를 달라하지말고 해달라고 하기(확인 해라~ 지시한다) 🔥
 > 2. Demeter's Law: 잘 이해가 되지 않음
 
 ### 정리
+
 - 캡슐화: 기능의 구현을 외부에 감춘다.
 - 캡슐화를 통해 기능을 사용하는 코드에 영향을 주지 않고 (또는 최소화) 내부 구현을 변경할 수 있는 유연함
 
 [Jetbrain 캡슐화 예제](https://blog.jetbrains.com/webstorm/2019/03/write-object-oriented-typescript-encapsulation/)
 
 ## 캡슐화 예제
+
 캡슐화를 연습한다.
+
 ```typescript
 // 1안
 // 2안 마틴파울러 리팩토링 코드
