@@ -1,5 +1,7 @@
 package reservation.domain;
 
+import generic.TimeInterval;
+
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
@@ -8,14 +10,14 @@ public class DiscountCondition {
     public enum ConditionType {
         PERIOD_CONDITION,
         SEQUENCE_CONDITION,
+        COMBINED_CONDITION
     }
 
     private Long id;
     private Long policyId;
     private ConditionType conditionType;
     private DayOfWeek dayOfWeek;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private TimeInterval interval;
     private Integer sequence;
 
     public DiscountCondition() {
@@ -29,7 +31,7 @@ public class DiscountCondition {
             LocalTime endTime,
             Integer sequence
     ) {
-        this(null, policyId, conditionType, dayOfWeek, startTime, endTime, sequence);
+        this(null, policyId, conditionType, dayOfWeek, TimeInterval.of(startTime, endTime), sequence);
     }
 
     public DiscountCondition(
@@ -37,80 +39,48 @@ public class DiscountCondition {
             Long policyId,
             ConditionType conditionType,
             DayOfWeek dayOfWeek,
-            LocalTime startTime,
-            LocalTime endTime,
+            TimeInterval interval,
             Integer sequence
     ) {
         this.id = id;
         this.policyId = policyId;
         this.conditionType = conditionType;
         this.dayOfWeek = dayOfWeek;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.interval = interval;
         this.sequence = sequence;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public boolean isSatisfiedBy(Screening screening) {
+        if (isPeriodCondition()) {
+            if (screening.isPlayedIn(dayOfWeek, interval.getStartTime(), interval.getEndTime())) {
+                return true;
+            }
+        } else if (isSequenceCondition()) {
+            if (sequence.equals(screening.getSequence())) {
+                return true;
+            }
+        } else if (isCombinedCondition()) {
+            if (screening.isPlayedIn(dayOfWeek, interval.getStartTime(), interval.getEndTime()) && sequence.equals(screening.getSequence())) {
+                return true;
+            }
+        }
 
-    public void setId(Long id) {
-        this.id = id;
+        return false;
     }
 
     public Long getPolicyId() {
         return policyId;
     }
 
-    public void setPolicyId(Long policyId) {
-        this.policyId = policyId;
-    }
-
-    public boolean isPeriodCondition() {
+    private boolean isPeriodCondition() {
         return ConditionType.PERIOD_CONDITION.equals(conditionType);
     }
 
-    public boolean isSequenceCondition() {
+    private boolean isSequenceCondition() {
         return ConditionType.SEQUENCE_CONDITION.equals(conditionType);
     }
 
-    public ConditionType getConditionType() {
-        return conditionType;
-    }
-
-    public void setConditionType(ConditionType conditionType) {
-        this.conditionType = conditionType;
-    }
-
-    public DayOfWeek getDayOfWeek() {
-        return dayOfWeek;
-    }
-
-    public void setDayOfWeek(DayOfWeek dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public Integer getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(Integer sequence) {
-        this.sequence = sequence;
+    private boolean isCombinedCondition() {
+        return ConditionType.COMBINED_CONDITION.equals(conditionType);
     }
 }

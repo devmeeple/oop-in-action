@@ -6,19 +6,19 @@ import reservation.service.ReservationService;
 
 import java.time.LocalDateTime;
 
-import static reservation.domain.DiscountCondition.ConditionType.PERIOD_CONDITION;
-import static reservation.domain.DiscountCondition.ConditionType.SEQUENCE_CONDITION;
-import static reservation.domain.DiscountPolicy.PolicyType.AMOUNT_POLICY;
 import static java.time.DayOfWeek.MONDAY;
 import static java.time.DayOfWeek.WEDNESDAY;
 import static java.time.LocalTime.of;
+import static reservation.domain.DiscountCondition.ConditionType.PERIOD_CONDITION;
+import static reservation.domain.DiscountCondition.ConditionType.SEQUENCE_CONDITION;
+import static reservation.domain.DiscountPolicy.PolicyType.AMOUNT_POLICY;
 
 public class Main {
 
     private ScreeningDAO screeningDAO = new ScreeningMemoryDAO();
     private MovieDAO movieDAO = new MovieMemoryDAO();
-    private DiscountPolicyDAO discoutPolicyDAO = new DiscountPolicyMemoryDAO();
     private DiscountConditionDAO discountConditionDAO = new DiscountConditionMemoryDAO();
+    private DiscountPolicyDAO discoutPolicyDAO = new DiscountPolicyMemoryDAO(discountConditionDAO);
     private ReservationDAO reservationDAO = new ReservationMemoryDAO();
 
     ReservationService reservationService = new ReservationService(
@@ -33,7 +33,12 @@ public class Main {
         Movie movie = new Movie("한산", 150, Money.wons(10000));
         movieDAO.insert(movie);
 
-        DiscountPolicy discountPolicy = new DiscountPolicy(movie.getId(), AMOUNT_POLICY, Money.wons(1000), null);
+        DiscountPolicy discountPolicy = new DiscountPolicy(
+                movie.getId(),
+                AMOUNT_POLICY,
+                Money.wons(1000),
+                null
+        );
         discoutPolicyDAO.insert(discountPolicy);
 
         discountConditionDAO.insert(new DiscountCondition(discountPolicy.getId(), SEQUENCE_CONDITION, null, null, null, 1));
@@ -42,7 +47,6 @@ public class Main {
         discountConditionDAO.insert(new DiscountCondition(discountPolicy.getId(), PERIOD_CONDITION, WEDNESDAY, of(18, 0), of(21, 0), null));
 
         Screening screening = new Screening(movie.getId(), 7, LocalDateTime.of(2024, 12, 11, 18, 0));
-
         screeningDAO.insert(screening);
 
         return screening;

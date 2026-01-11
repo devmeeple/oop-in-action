@@ -1,6 +1,7 @@
 package reservation.service;
 
 import generic.Money;
+import generic.TimeInterval;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -58,15 +59,18 @@ class ReservationServiceTest {
                 .thenReturn(new Movie(movieId, "한산", 120, Money.wons(10000)));
 
         when(discountPolicyDAO.selectDiscountPolicy(movieId))
-                .thenReturn(new DiscountPolicy(policyId, movieId, AMOUNT_POLICY, Money.wons(1000), null));
-
-        when(discountConditionDAO.selectDiscountConditions(policyId))
-                .thenReturn(List.of(
-                        new DiscountCondition(1L, policyId, SEQUENCE_CONDITION, null, null, null, 1),
-                        new DiscountCondition(2L, policyId, SEQUENCE_CONDITION, null, null, null, 10),
-                        new DiscountCondition(3L, policyId, PERIOD_CONDITION, MONDAY, LocalTime.of(10, 12), LocalTime.of(12, 0), null),
-                        new DiscountCondition(4L, policyId, PERIOD_CONDITION, WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(21, 0), null)
-                ));
+                .thenReturn(new DiscountPolicy(
+                        policyId,
+                        movieId,
+                        AMOUNT_POLICY,
+                        Money.wons(1000),
+                        null,
+                        List.of(
+                                new DiscountCondition(1L, policyId, SEQUENCE_CONDITION, null, null, 1),
+                                new DiscountCondition(2L, policyId, SEQUENCE_CONDITION, null, null, 10),
+                                new DiscountCondition(3L, policyId, PERIOD_CONDITION, MONDAY, TimeInterval.of(LocalTime.of(10, 12), LocalTime.of(12, 0)), null),
+                                new DiscountCondition(4L, policyId, PERIOD_CONDITION, WEDNESDAY, TimeInterval.of(LocalTime.of(18, 0), LocalTime.of(21, 0)), null)
+                        )));
 
         // when
         Reservation reservation = reservationService.reserveScreening(customerId, screeningId, 2);
@@ -90,15 +94,18 @@ class ReservationServiceTest {
                 .thenReturn(new Movie(movieId, "한산", 120, Money.wons(10000)));
 
         when(discountPolicyDAO.selectDiscountPolicy(movieId))
-                .thenReturn(new DiscountPolicy(policyId, movieId, PERCENT_POLICY, null, 0.1));
-
-        when(discountConditionDAO.selectDiscountConditions(policyId))
-                .thenReturn(List.of(
-                        new DiscountCondition(1L, policyId, SEQUENCE_CONDITION, null, null, null, 1),
-                        new DiscountCondition(2L, policyId, SEQUENCE_CONDITION, null, null, null, 10),
-                        new DiscountCondition(3L, policyId, PERIOD_CONDITION, MONDAY, LocalTime.of(10, 12), LocalTime.of(12, 0), null),
-                        new DiscountCondition(4L, policyId, PERIOD_CONDITION, WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(21, 0), null)
-                ));
+                .thenReturn(new DiscountPolicy(
+                        policyId,
+                        movieId,
+                        PERCENT_POLICY,
+                        null,
+                        0.1,
+                        List.of(
+                                new DiscountCondition(1L, policyId, SEQUENCE_CONDITION, null, null, 1),
+                                new DiscountCondition(2L, policyId, SEQUENCE_CONDITION, null, null, 10),
+                                new DiscountCondition(3L, policyId, PERIOD_CONDITION, MONDAY, TimeInterval.of(LocalTime.of(10, 12), LocalTime.of(12, 0)), null),
+                                new DiscountCondition(4L, policyId, PERIOD_CONDITION, WEDNESDAY, TimeInterval.of(LocalTime.of(18, 0), LocalTime.of(21, 0)), null)
+                        )));
 
         // when
         Reservation reservation = reservationService.reserveScreening(customerId, screeningId, 2);

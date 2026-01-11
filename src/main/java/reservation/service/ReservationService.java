@@ -1,10 +1,11 @@
 package reservation.service;
 
 import generic.Money;
-import reservation.domain.*;
+import reservation.domain.DiscountPolicy;
+import reservation.domain.Movie;
+import reservation.domain.Reservation;
+import reservation.domain.Screening;
 import reservation.persistence.*;
-
-import java.util.List;
 
 public class ReservationService {
 
@@ -32,13 +33,11 @@ public class ReservationService {
         Screening screening = screeningDAO.selectScreening(screeningId);
         Movie movie = movieDAO.selectMovie(screening.getMovieId());
         DiscountPolicy policy = discountPolicyDAO.selectDiscountPolicy(movie.getId());
-        List<DiscountCondition> conditions = discountConditionDAO.selectDiscountConditions(policy.getId());
-
-        DiscountCondition condition = findDiscountCondition(screening, conditions);
+        boolean found = policy.findDiscountConditions(screening);
 
         Money fee;
-        if (condition != null) {
-            fee = movie.getFee().minus(calculateDiscount(policy, movie));
+        if (found) {
+            fee = movie.getFee().minus(policy.calculateDiscount(movie));
         } else {
             fee = movie.getFee();
         }
@@ -47,36 +46,6 @@ public class ReservationService {
         reservationDAO.insert(reservation);
 
         return reservation;
-    }
-
-    private DiscountCondition findDiscountCondition(Screening screening, List<DiscountCondition> conditions) {
-        for (DiscountCondition condition : conditions) {
-            if (condition.isPeriodCondition()) {
-                if (screening.isPlayedIn(
-                        condition.getDayOfWeek(),
-                        condition.getStartTime(),
-                        condition.getEndTime()
-                )) {
-                    return condition;
-                }
-            } else {
-                if (condition.getSequence().equals(screening.getSequence())) {
-                    return condition;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private Money calculateDiscount(DiscountPolicy policy, Movie movie) {
-        if (policy.isAmountPolicy()) {
-            return policy.getAmount();
-        } else if (policy.isPercentPolicy()) {
-            return movie.getFee().times(policy.getPercent());
-        }
-
-        return Money.ZERO;
     }
 
     private Reservation makeReservation(Long customerId, Long screeningId, Integer audienceCount, Money fee) {

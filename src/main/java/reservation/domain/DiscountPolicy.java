@@ -2,6 +2,9 @@ package reservation.domain;
 
 import generic.Money;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DiscountPolicy {
 
     public enum PolicyType {
@@ -14,6 +17,7 @@ public class DiscountPolicy {
     private PolicyType policyType;
     private Money amount;
     private Double percent;
+    private List<DiscountCondition> conditions;
 
     public DiscountPolicy() {
     }
@@ -24,7 +28,17 @@ public class DiscountPolicy {
             Money amount,
             Double percent
     ) {
-        this(null, movieId, policyType, amount, percent);
+        this(null, movieId, policyType, amount, percent, new ArrayList<>());
+    }
+
+    public DiscountPolicy(
+            Long movieId,
+            PolicyType policyType,
+            Money amount,
+            Double percent,
+            List<DiscountCondition> conditions
+    ) {
+        this(null, movieId, policyType, amount, percent, conditions);
     }
 
     public DiscountPolicy(
@@ -32,60 +46,54 @@ public class DiscountPolicy {
             Long movieId,
             PolicyType policyType,
             Money amount,
-            Double percent
+            Double percent,
+            List<DiscountCondition> conditions
     ) {
         this.id = id;
         this.movieId = movieId;
         this.policyType = policyType;
         this.amount = amount;
         this.percent = percent;
+        this.conditions = conditions;
+    }
+
+    public boolean findDiscountConditions(Screening screening) {
+        for (DiscountCondition condition : conditions) {
+            if (condition.isSatisfiedBy(screening)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Money calculateDiscount(Movie movie) {
+        if (isAmountPolicy()) {
+            return amount;
+        } else if (isPercentPolicy()) {
+            return movie.getFee().times(percent);
+        }
+
+        return Money.ZERO;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Long getMovieId() {
         return movieId;
     }
 
-    public void setMovieId(Long movieId) {
-        this.movieId = movieId;
+    public void setDiscountConditions(List<DiscountCondition> conditions) {
+        this.conditions = conditions;
     }
 
-    public boolean isAmountPolicy() {
+    private boolean isAmountPolicy() {
         return PolicyType.AMOUNT_POLICY.equals(policyType);
     }
 
-    public boolean isPercentPolicy() {
+    private boolean isPercentPolicy() {
         return PolicyType.PERCENT_POLICY.equals(policyType);
-    }
-
-    public PolicyType getPolicyType() {
-        return policyType;
-    }
-
-    public void setPolicyType(PolicyType policyType) {
-        this.policyType = policyType;
-    }
-
-    public Money getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Money amount) {
-        this.amount = amount;
-    }
-
-    public Double getPercent() {
-        return percent;
-    }
-
-    public void setPercent(Double percent) {
-        this.percent = percent;
     }
 }
