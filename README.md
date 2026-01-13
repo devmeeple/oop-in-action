@@ -72,3 +72,21 @@
 > Tell, Don't Ask 
 
 - 내부의 데이터(상태)를 감추고(캡슐화), 외부에는 책임(행동)만 드러내어 변경의 파도를 객체라는 방파제로 막아낸다.
+
+## 4. 책임 할당하기
+
+### 4.1 GRASP(General Responsibility Assigment Software Patterns)
+
+- 객체지향 설계는 어떤 객체에게 어떤 책임을 할당할지를 정하는 것이 핵심이다.
+- 객체에게 책임을 할당할 때 참고할 만한 가이드라인, GRASP는 Craig Larman이 제안했다.
+- 패턴
+  - Information expert(정보 전문가)
+  - Creator(창조자)
+  - Low coupling(낮은 결합도)
+  - High cohesion(높은 응집도)
+  - Polymorphism(다형성)
+  - Protected variations(변경 보호)
+
+**참고 자료**
+
+- [GRASP (object-oriented design)](https://en.wikipedia.org/wiki/GRASP_(object-oriented_design))
