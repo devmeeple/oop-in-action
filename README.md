@@ -88,3 +88,82 @@
 **참고 자료**
 
 - [GRASP (object-oriented design)](https://en.wikipedia.org/wiki/GRASP_(object-oriented_design))
+
+## 5. 객체지향 구현
+
+### 5.1 추상 클래스와 인터페이스
+
+객체지향 설계에서 추상 클래스(Abstract Class)와 인터페이스(Interface)는 공통점을 묶고 확장하기 위한 핵심 개념이다. 
+하지만 목적과 사용 의도는 명확히 다르다.
+
+```java
+public abstract class Payment {
+    
+    protected long amount;
+    
+    // 공통 로직
+    public void validate() {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("잔액이 부족합니다.");
+        }
+    }
+    
+    // 구체적인 결제 방식은 자식 클래스가 구현해야 한다.
+    public abstract void process();
+}
+
+public class CardPayment extends Payment {
+    
+    @Override
+    public void process() {
+        // 결제 방식
+    }
+}
+```
+
+- 추상클래스란 여러 클래스가 공유하는 공통 상태와 기본 동작을 담는 부모 클래스다.
+- 확장을 전제로 한 설계: 상속을 통해 기능을 구체화한다.
+- 공통된 상태와 행위를 제공: 필드와 메서드를 가질 수 있다.
+- 기본 구현 + 강제 구현을 함께 제공: 공통 로직은 부모가 제공하고 세부 구현은 자식(`abstract method`)에게 위임한다.
+
+```java
+public interface MessageSendable {
+    
+    void send(String message);
+}
+
+public class EmailService implements MessageSendable {
+    
+    @Override
+    public void send(String message) {
+        // 이메일 전송 로직
+    }
+}
+```
+
+- 인터페이스란 클래스가 반드시 지켜야 할 행위(약할)를 정의한 계약서다.
+- 구현 방법에는 관심을 두지 않고 무엇을 할 수 있는지만 정의한다.
+- 상태를 가지지 않는다.
+- 여러 역할을 동시에 부여할 수 있다.
+- 구현체 간 결합도를 낮추는 목적으로 사용한다.
+
+**<참고 자료>**
+
+- [Dev.java 'Abstract Methods and Classes'](https://dev.java/learn/inheritance/abstract-classes/)
+
+### 5.3 메시지와 메서드
+
+메시지와 메서드는 캡슐화를 이해할 때 자주 사용하는 용어다.
+
+- 메시지(Message): 객체에게 전달하는 '의도'다. 행위 자체를 의미한다. 호출자는 수신자가 어떻게 행동할 지 신경쓰지 않는다.
+- 메서드(Method): 메시지를 수신한 객체가 '실제로 실행하는 구체적인 코드'를 의미한다. 메시지를 받고 실제로 표현하는 내용을 의미한다.
+- 객체지향 설계는 '어떤 메서드를 만들까?'가 아닌 '어떤 메시지를 주고 받을까?'를 우선 고민해야 한다.
+
+### 5.4 도메인 로직 vs. 애플리케이션 로직
+
+- 도메인 로직(Domain Logic)
+    - 비즈니스 자체의 규칙, 현실 세계의 비즈니스 정책을 반영
+    - 단위 테스트로 빠르게 검증
+- 애플리케이션 로직(Application Logic)
+    - 시스템 운영을 위한 흐름, 인프라(DB, 외부 API)와 도메인을 연결
+    - Mocking 또는 통합 테스트로 검증
