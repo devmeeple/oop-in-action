@@ -1,6 +1,7 @@
 package reservation;
 
-import generic.Money;
+import org.eternity.generic.Money;
+import org.eternity.reservation.domain.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
@@ -15,6 +16,7 @@ class MovieTest {
     void 비율할인정책_계산하기() {
         // given
         Movie movie = new Movie(
+                "한산",
                 Money.wons(10_000L),
                 new PercentDiscountPolicy(
                         0.1,
@@ -36,6 +38,7 @@ class MovieTest {
     void 금액할인정책_계산하기() {
         // given
         Movie movie = new Movie(
+                "한산",
                 Money.wons(10_000L),
                 new AmountDiscountPolicy(
                         Money.wons(1000L),
@@ -56,7 +59,7 @@ class MovieTest {
     @Test
     void 비할인정책_계산하기() {
         // given
-        Movie movie = new Movie(Money.wons(10_000L), new NoneDiscountPolicy());
+        Movie movie = new Movie("한산", Money.wons(10_000L), new NoneDiscountPolicy());
         Screening screening = new Screening(movie, 1, LocalDateTime.of(2024, 12, 11, 18, 0));
 
         // when

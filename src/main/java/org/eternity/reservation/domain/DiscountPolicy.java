@@ -1,14 +1,16 @@
-package reservation;
+package org.eternity.reservation.domain;
 
-import generic.Money;
+import org.eternity.generic.Money;
 
 import java.util.List;
 
 public abstract class DiscountPolicy {
 
+    private Long id;
     private List<DiscountCondition> conditions;
 
-    public DiscountPolicy(DiscountCondition... conditions) {
+    public DiscountPolicy(Long id, DiscountCondition... conditions) {
+        this.id = id;
         this.conditions = List.of(conditions);
     }
 

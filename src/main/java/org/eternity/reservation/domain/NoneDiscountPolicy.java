@@ -1,8 +1,12 @@
-package reservation;
+package org.eternity.reservation.domain;
 
-import generic.Money;
+import org.eternity.generic.Money;
 
 public class NoneDiscountPolicy extends DiscountPolicy {
+
+    public NoneDiscountPolicy() {
+        super(null, screening -> true);
+    }
 
     @Override
     protected Money getDiscountAmount(Screening screening) {

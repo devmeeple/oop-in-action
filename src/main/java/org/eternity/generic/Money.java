@@ -1,4 +1,4 @@
-package generic;
+package org.eternity.generic;
 
 import java.math.BigDecimal;
 import java.util.Collection;

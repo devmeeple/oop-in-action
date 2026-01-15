@@ -1,4 +1,4 @@
-package reservation;
+package org.eternity.reservation.domain;
 
 public interface DiscountCondition {
 
