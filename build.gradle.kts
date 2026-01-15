@@ -1,27 +1,40 @@
 plugins {
-    id("java")
+    java
+    id("org.springframework.boot") version "4.0.1"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
-group = "io.github.devmeeple"
-version = "1.0-SNAPSHOT"
+group = "org.eternity"
+version = "0.0.1-SNAPSHOT"
+description = "오브젝트 - 기초편"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
 
 repositories {
     mavenCentral()
 }
 
-val mockitoVersion = "5.21.0"
-
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    // Web
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
 
-    // Mockito
-    testImplementation("org.mockito:mockito-core:$mockitoVersion") // Mock 객체 생성
-    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion") // JUnit5와 Mockito 연결
+    // JDBC
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
 
+    // H2 Database
+    implementation("org.springframework.boot:spring-boot-h2console")
+    runtimeOnly("com.h2database:h2")
+
+    // Test
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-jdbc-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.test {
+tasks.withType<Test>() {
     useJUnitPlatform()
 }
