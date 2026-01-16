@@ -37,7 +37,7 @@ CREATE TABLE screening(
     id             INT PRIMARY KEY AUTO_INCREMENT,
     movie_id       INT NOT NULL COMMENT '영화 ID',
     sequence       INT NOT NULL COMMENT '회차',
-    screening_time TIMESTAMP COMMENT '시작 시간'
+    when_screened TIMESTAMP COMMENT '시작 시간'
 );
 
 

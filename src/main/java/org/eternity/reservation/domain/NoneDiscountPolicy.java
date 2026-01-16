@@ -4,8 +4,12 @@ import org.eternity.generic.Money;
 
 public class NoneDiscountPolicy extends DiscountPolicy {
 
-    public NoneDiscountPolicy() {
-        super(null, screening -> true);
+    public NoneDiscountPolicy(Long id, DiscountCondition... conditions) {
+        super(id, conditions);
+    }
+
+    public NoneDiscountPolicy(DiscountCondition... conditions) {
+        super(null, conditions);
     }
 
     @Override

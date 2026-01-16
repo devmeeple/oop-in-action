@@ -1,7 +1,9 @@
 package org.eternity.reservation.web;
 
 import org.eternity.generic.Money;
+import org.eternity.reservation.domain.Customer;
 import org.eternity.reservation.domain.Reservation;
+import org.eternity.reservation.domain.Screening;
 import org.eternity.reservation.service.CustomerDAO;
 import org.eternity.reservation.service.ReservationDAO;
 import org.eternity.reservation.service.ReservationService;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 
+// curl -H "Content-Type: application/json" -X POST http://localhost:8080/reservations  -d '{"customerId":1, "screeningId":1, "audienceCount":2}'
+// http POST :8080/reservations customerId=1 screeningId=1 audienceCount=2
 @RestController
 public class ReservationController {
 
@@ -39,30 +43,19 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ReservationResponse reserve(@RequestBody ReservationRequest request) {
-        Reservation result = reservationService.reserveScreening(
-                request.getCustomerId(),
-                request.getScreeningId(),
-                request.getAudienceCount()
-        );
+        Reservation result = transactionTemplate.execute((status) -> {
+            Customer customer = customerDAO.find(request.getCustomerId());
+            Screening screening = screeningDAO.find(request.getScreeningId());
+
+            Reservation reservation = screening.reserve(customer, request.getAudienceCount());
+
+            reservationDAO.save(reservation);
+
+            return reservation;
+        });
 
         return new ReservationResponse(result);
     }
-
-//     @PostMapping("/reservations")
-//     public ReservationResponse reserve(@RequestBody ReservationRequest request) {
-//         Reservation result = transactionTemplate.execute((status) -> {
-//             Customer customer = customerDAO.find(request.getCustomerId());
-//             Screening screening = screeningDAO.find(request.getScreeningId());
-//
-//             Reservation reservation = screening.reserve(customer, request.getAudienceCount());
-//
-//             reservationDAO.save(reservation);
-//
-//             return reservation;
-//         });
-//
-//         return new ReservationResponse(result);
-//     }
 }
 
 class ReservationRequest {

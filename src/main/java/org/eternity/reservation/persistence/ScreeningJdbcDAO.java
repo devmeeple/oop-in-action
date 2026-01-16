@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.time.DayOfWeek;
+import java.util.List;
 
 @Repository
 public class ScreeningJdbcDAO implements ScreeningDAO {
@@ -24,7 +25,7 @@ public class ScreeningJdbcDAO implements ScreeningDAO {
 
     private Screening queryScreening(Long screeningId) {
         return jdbcClient.sql(
-                "SELECT id, movie_id, sequence, screening_time " +
+                "SELECT id, movie_id, sequence, when_screened " +
                 "FROM screening " +
                 "WHERE id = :id")
                 .param("id", screeningId)
@@ -32,7 +33,7 @@ public class ScreeningJdbcDAO implements ScreeningDAO {
                         rs.getLong("id"),
                         queryMovie(rs.getLong("movie_id")),
                         rs.getInt("sequence"),
-                        rs.getTimestamp("screening_time").toLocalDateTime()))
+                        rs.getTimestamp("when_screened").toLocalDateTime()))
                 .single();
     }
 
@@ -51,7 +52,7 @@ public class ScreeningJdbcDAO implements ScreeningDAO {
     }
 
     private DiscountPolicy queryDiscountPolicy(Long movieId) {
-        return jdbcClient.sql(
+        List<DiscountPolicy> policies = jdbcClient.sql(
                 "SELECT id, policy_type, amount, percent " +
                 "FROM discount_policy " +
                 "WHERE movie_id = :movieId")
@@ -69,7 +70,13 @@ public class ScreeningJdbcDAO implements ScreeningDAO {
                             rs.getDouble("percent"),
                             queryDiscountConditions(rs.getLong("id")));
                 })
-                .single();
+                .list();
+
+        if (policies.size() > 1) {
+            return new OverlappedDiscountPolicy(policies.toArray(new DiscountPolicy[0]));
+        }
+
+        return policies.isEmpty() ? null : policies.get(0);
     }
 
     private DiscountCondition[] queryDiscountConditions(Long policyId) {
